@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(uuid()) @db.VarChar(36)
+  name        String    @unique @db.Text
+  description String?   @unique @db.Text
+  isDeleted   Boolean   @db.Boolean @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[] @relation("CategoryProducts")
+
+  @@map("category")
+}
+
+model Brand {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  name        String  @unique @db.Text
+  isDeleted   Boolean   @db.Boolean @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[] @relation("BrandProducts")
+
+  @@map("brand")
+}
+
+model Product {
+  id             String   @id @default(uuid()) @db.VarChar(36)
+  title          String   @db.Text
+  description    String   @db.Text
+  price          Float   
+  sku            String   @unique
+  features       String[] @db.Text
+  specifications String   @db.Text
+  images         String[] @db.Text
+  warranty       String   @db.Text
+  deliveryInfo   String?  @db.Text
+  categoryId     String   @map("category_id")
+  brandId        String   @map("brand_id")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  isDeleted      Boolean  @db.Boolean @default(false)
+  url_source     String   @db.Text
+  brand          Brand    @relation("BrandProducts", fields: [brandId], references: [id])
+  category       Category @relation("CategoryProducts", fields: [categoryId], references: [id])
+
+  @@map("product")
+}

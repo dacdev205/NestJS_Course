@@ -1,0 +1,49 @@
+model Product {
+  id       Int       @id @default(autoincrement())
+  title String  @unique
+  url_source  String
+  description String
+  brandId     Int
+  categoryId  Int
+  brand       Brand    @relation(fields: [brandId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+  sku String
+  price   Float
+  features Feature[] 
+  specifications String
+  images Images[] 
+  warranty String
+  delivery_information String
+  createAt DateTime @default(now())
+  updateAt  DateTime @updatedAt 
+  @@map("product") 
+}
+
+
+model Brand {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[] // 1 Brand has many Products
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[] // 1 Category has many Products
+}
+
+
+model Feature {
+  id        Int      @id @default(autoincrement())
+  content      String
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Images {
+  id        Int      @id @default(autoincrement())
+  url      String
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+
+}
