@@ -6,14 +6,14 @@ import { FilterProductDto } from '../dto/filter-product.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly categoryRepository: ProductRepository) {}
+  constructor(private readonly productRepository: ProductRepository) {}
   async create(requestBody: CreateProductDto) {
     try {
-      const product = await this.categoryRepository.create(requestBody);
+      const product = await this.productRepository.create(requestBody);
       if (product) {
-        return { message: 'Brand created successfully', data: product };
+        return { message: 'Product created successfully', data: product };
       } else {
-        throw new Error('Failed to create brand');
+        throw new Error('Failed to create Brand');
       }
     } catch (error) {
       throw error.message;
@@ -22,21 +22,21 @@ export class ProductService {
 
   async findAll(title?: string) {
     try {
-      return await this.categoryRepository.findAll(title);
+      return await this.productRepository.findAll(title);
     } catch (error) {
       throw error.message;
     }
   }
   async filter(filter: FilterProductDto) {
     try {
-      return await this.categoryRepository.filter(filter);
+      return await this.productRepository.filter(filter);
     } catch (error) {
       throw error.message;
     }
   }
   async sorting() {
     try {
-      return await this.categoryRepository.sorting();
+      return await this.productRepository.sorting();
     } catch (error) {
       throw error.message;
     }
@@ -46,11 +46,11 @@ export class ProductService {
       if (!id) {
         throw new Error('ID is required');
       }
-      const category = await this.categoryRepository.findById(id);
-      if (!category) {
+      const product = await this.productRepository.findById(id);
+      if (!product) {
         throw new Error(`Product with ID ${id} not found`);
       } else {
-        return category;
+        return product;
       }
     } catch (error) {
       throw error.message;
@@ -61,13 +61,7 @@ export class ProductService {
       if (!id) {
         throw new Error('ID is required');
       }
-      const product = await this.categoryRepository.findById(id);
-      if (!product) {
-        throw new Error(`Product with ID ${id} not found`);
-      } else {
-        await this.categoryRepository.softDelete(id, true);
-        return { message: 'Product deleted successfully' };
-      }
+      await this.productRepository.softDelete(id, true);
     } catch (error) {
       throw error.message;
     }
@@ -77,12 +71,7 @@ export class ProductService {
       if (!id) {
         throw new Error('ID is required');
       }
-      const checkId = await this.categoryRepository.findById(id);
-      if (!checkId) {
-        throw new Error(`Product with ID ${id} not found`);
-      } else {
-        return await this.categoryRepository.update(id, requestBody);
-      }
+      return await this.productRepository.update(id, requestBody);
     } catch (error) {
       throw error.message;
     }

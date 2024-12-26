@@ -35,7 +35,11 @@ export class ProductController {
   }
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productService.findProductById(id);
+    try {
+      return this.productService.findProductById(id);
+    } catch (error) {
+      throw error.message;
+    }
   }
   @Post('filter')
   filterProduct(@Query() filter: FilterProductDto) {
