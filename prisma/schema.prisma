@@ -10,7 +10,7 @@ datasource db {
 model Category {
   id          String    @id @default(uuid()) @db.VarChar(36)
   name        String    @unique @db.Text
-  description String?   @unique @db.Text
+  description String?   @db.Text
   isDeleted   Boolean   @db.Boolean @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

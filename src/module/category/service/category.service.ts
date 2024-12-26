@@ -7,11 +7,16 @@ import { CategoryRepository } from '../repositories/category.repo';
 export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
   async create(requestBody: CreateCategoryDto) {
-    const category = await this.categoryRepository.create(requestBody);
-    if (!category) {
-      throw new Error('Failed to create category');
+    try {
+      const category = await this.categoryRepository.create(requestBody);
+      if (category) {
+        return { message: 'Category created successfully', data: category };
+      } else {
+        throw new Error('Failed to create Croduct');
+      }
+    } catch (error) {
+      throw error.message;
     }
-    return category;
   }
 
   async findAll(name?: string) {

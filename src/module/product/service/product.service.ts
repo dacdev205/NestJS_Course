@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ProductRepository } from 'src/module/product/repositories/product.repo';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
@@ -11,9 +11,13 @@ export class ProductService {
     try {
       const product = await this.productRepository.create(requestBody);
       if (product) {
-        return { message: 'Product created successfully', data: product };
+        return {
+          message: 'Product created successfully',
+          data: product,
+          statusCode: HttpStatus.CREATED,
+        };
       } else {
-        throw new Error('Failed to create Brand');
+        throw new Error('Failed to create Product');
       }
     } catch (error) {
       throw error.message;

@@ -21,14 +21,12 @@ export class ProductController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(CreateProductSchema))
-  createProduct(
+  async createProduct(
     @Body()
     createProductDto: CreateProductDto,
   ) {
-    return {
-      message: 'Brand created successfully',
-      data: this.productService.create(createProductDto),
-    };
+    const product = await this.productService.create(createProductDto);
+    return product;
   }
 
   @Get()

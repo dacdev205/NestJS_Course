@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { WasherDryer, Rangehood, Diswasher } from './seeds/products';
+import { WasherDryer, Rangehood, Diswasher } from './seeds/data/products';
 import { getCategoryName } from 'src/shared/utilities/getCategoryName';
 
 const prisma = new PrismaClient();
