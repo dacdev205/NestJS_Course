@@ -15,3 +15,4 @@ export const CreateProductSchema = z.object({
   url_source: z.string().min(3, { message: 'URL is required' }),
   discription: z.string().min(3, { message: 'Discription is required!' }),
 });
+export type CreateProductSchema = z.infer<typeof CreateProductSchema>;

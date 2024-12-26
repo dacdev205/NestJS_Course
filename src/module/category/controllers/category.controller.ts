@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { CategoryService } from '../service/category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
@@ -18,8 +19,9 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @UsePipes(new ZodValidationPipe(CreateCategorySchema))
   createCategory(
-    @Body(new ZodValidationPipe(CreateCategorySchema))
+    @Body()
     createCategoryDto: CreateCategoryDto,
   ) {
     return {

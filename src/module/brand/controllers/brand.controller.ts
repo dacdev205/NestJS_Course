@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { CreateBrandDto } from 'src/module/brand/dto/create-brand.dto';
 import { BrandService } from 'src/module/brand/service/brand.service';
@@ -18,10 +19,8 @@ export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 
   @Post()
-  createBrand(
-    @Body(new ZodValidationPipe(CreateBrandSchema))
-    createBrandDto: CreateBrandDto,
-  ) {
+  @UsePipes(new ZodValidationPipe(CreateBrandSchema))
+  createBrand(@Body() createBrandDto: CreateBrandDto) {
     return {
       message: 'Brand created successfully',
       data: this.brandService.create(createBrandDto),

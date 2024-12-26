@@ -6,21 +6,23 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { ProductService } from 'src/module/product/service/product.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.schema';
-import { CreateBrandSchema } from 'src/validation/zod-schema/brand.schema';
 import { FilterProductDto } from '../dto/filter-product.dto';
+import { CreateProductSchema } from 'src/validation/zod-schema/product.schema';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
+  @UsePipes(new ZodValidationPipe(CreateProductSchema))
   createProduct(
-    @Body(new ZodValidationPipe(CreateBrandSchema))
+    @Body()
     createProductDto: CreateProductDto,
   ) {
     return {
@@ -50,6 +52,7 @@ export class ProductController {
     return this.productService.sorting();
   }
   @Patch(':id')
+  @UsePipes(new ZodValidationPipe(CreateProductSchema))
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(id, updateProductDto);
   }
