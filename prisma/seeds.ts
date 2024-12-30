@@ -1,80 +1,81 @@
-import { PrismaClient } from '@prisma/client';
-import { WasherDryer, Rangehood, Diswasher } from './seeds/data/products';
-import { getCategoryName } from 'src/shared/utilities/getCategoryName';
+// import { Dishwasher, Rangehood, WasherDryer } from './seeds/product';
 
-const prisma = new PrismaClient();
+// import { PrismaClient } from '@prisma/client';
+// import { getCategoryName } from 'src/shared/utilities/getCategoryName';
 
-async function createProduct() {
-  const allProducts = [
-    ...WasherDryer.data,
-    ...Rangehood.data,
-    ...Diswasher.data,
-  ];
-  const existingUrl = [];
+// const prisma = new PrismaClient();
 
-  for (const product of allProducts) {
-    if (
-      !product ||
-      !product.title ||
-      !product.url_source ||
-      !product.sku ||
-      !product.images ||
-      !product.specifications
-    ) {
-      continue;
-    }
-    if (existingUrl.includes(product.url_source)) {
-      continue;
-    } else {
-      existingUrl.push(product.url_source);
-    }
-    const existingSku = await prisma.product.findUnique({
-      where: { sku: product.sku },
-    });
-    if (existingSku) {
-      continue;
-    }
-    const brand = await prisma.brand.upsert({
-      where: { name: product.brand },
-      update: {},
-      create: { name: product.brand },
-    });
-    const categoryName = getCategoryName(product.title);
+// async function createProduct() {
+//   const allProducts = [
+//     ...WasherDryer.data,
+//     ...Rangehood.data,
+//     ...Dishwasher.data,
+//   ];
+//   const existingUrl = [];
 
-    if (!categoryName) {
-      continue;
-    }
-    const category = await prisma.category.upsert({
-      where: { name: categoryName },
-      update: {},
-      create: { name: categoryName },
-    });
+//   for (const product of allProducts) {
+//     if (
+//       !product ||
+//       !product.title ||
+//       !product.url_source ||
+//       !product.sku ||
+//       !product.images ||
+//       !product.specifications
+//     ) {
+//       continue;
+//     }
+//     if (existingUrl.includes(product.url_source)) {
+//       continue;
+//     } else {
+//       existingUrl.push(product.url_source);
+//     }
+//     const existingSku = await prisma.product.findUnique({
+//       where: { sku: product.sku },
+//     });
+//     if (existingSku) {
+//       continue;
+//     }
+//     const brand = await prisma.brand.upsert({
+//       where: { name: product.brand },
+//       update: {},
+//       create: { name: product.brand },
+//     });
+//     const categoryName = getCategoryName(product.title);
 
-    await prisma.product.create({
-      data: {
-        title: product.title,
-        url_source: product.url_source,
-        description: product.description,
-        sku: product.sku,
-        price: product.price,
-        features: product.features,
-        specifications: product.specifications,
-        warranty: product.warranty,
-        images: {
-          set: product.images,
-        },
-        brandId: brand.id,
-        categoryId: category.id,
-      },
-    });
-  }
-  console.log('Products created');
-}
+//     if (!categoryName) {
+//       continue;
+//     }
+//     const category = await prisma.category.upsert({
+//       where: { name: categoryName },
+//       update: {},
+//       create: { name: categoryName },
+//     });
 
-createProduct()
-  .catch((e) => {
-    throw e;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+//     await prisma.product.create({
+//       data: {
+//         title: product.title,
+//         urlSource: product.url_source,
+//         description: product.description,
+//         sku: product.sku,
+//         price: product.price,
+//         features: product.features,
+//         specifications: product.specifications,
+//         warranty: product.warranty,
+//         images: {
+//           set: product.images,
+//         },
+//         brandId: brand.id,
+//         categoryId: category.id,
+//       },
+//     });
+//   }
+//   console.log('Products created');
+// }
+
+// createProduct()
+//   .catch((e) => {
+//     throw e;
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });

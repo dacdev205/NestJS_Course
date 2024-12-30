@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { BrandController } from './controllers/brand.controller';
-import { BrandService } from './service/brand.service';
-import { BrandRepository } from './repositories/brand.repo';
+import { BrandController } from './brand.controller';
+import { BrandRepository } from './brand.repo';
+import { BrandService } from './brand.service';
 import { GlobalModule } from 'src/shared/global.module';
+import { Module } from '@nestjs/common';
 
 @Module({
   imports: [GlobalModule],

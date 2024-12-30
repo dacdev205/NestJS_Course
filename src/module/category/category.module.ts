@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { CategoryController } from './category.controller';
+import { CategoryRepository } from './category.repo';
+import { CategoryService } from './category.service';
 import { GlobalModule } from 'src/shared/global.module';
-import { CategoryController } from './controllers/category.controller';
-import { CategoryService } from './service/category.service';
-import { CategoryRepository } from './repositories/category.repo';
+import { Module } from '@nestjs/common';
 
 @Module({
   imports: [GlobalModule],
