@@ -1,22 +1,22 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { create_slug } from 'src/common/utils/create-slug';
+import { BRAND_NOTFOUND } from 'src/content/errors/brand.error';
+import { CATEGORY_NOTFOUND } from 'src/content/errors/category.error';
 import {
   PRODUCT_CREATE_FAILED,
   PRODUCT_NOTFOUND,
   PRODUCT_UPDATE_FAILED,
 } from 'src/content/errors/product.error';
+import { ProductRepository } from 'src/module/product/product.repo';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, Product } from '@prisma/client';
-
-import { BRAND_NOTFOUND } from 'src/content/errors/brand.error';
-import { BrandService } from '../brand/brand.service';
-import { CATEGORY_NOTFOUND } from 'src/content/errors/category.error';
 import { CategoryService } from './../category/category.service';
+import { BrandService } from '../brand/brand.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { FilterProductDto } from './dtos/filter-product.dto';
-import { ProductRepository } from 'src/module/product/product.repo';
 import { UpdateProductDto } from './dtos/update-product.dto';
 
 @Injectable()
@@ -26,6 +26,10 @@ export class ProductService {
     private readonly categoryService: CategoryService,
     private readonly brandService: BrandService,
   ) {}
+  async genSlug(name: string): Promise<string> {
+    const slug = create_slug(name);
+    return slug;
+  }
   async existing_sku(sku: string): Promise<boolean> {
     const select: Prisma.ProductSelect = {
       id: true,
@@ -45,6 +49,7 @@ export class ProductService {
     }
   }
   async create(requestBody: CreateProductDto): Promise<Product> {
+    const slug = await this.genSlug(requestBody.title);
     const existing_sku = await this.existing_sku(requestBody.sku);
     if (existing_sku) {
       throw new BadRequestException(PRODUCT_CREATE_FAILED);
@@ -62,6 +67,7 @@ export class ProductService {
       throw new NotFoundException(BRAND_NOTFOUND);
     }
     const data = {
+      slug,
       title: requestBody.title,
       description: requestBody.description,
       sku: requestBody.sku,
@@ -85,7 +91,7 @@ export class ProductService {
   }
 
   async findAll(filter: FilterProductDto): Promise<any> {
-    const { search, filter: filters, sort } = filter;
+    const { search, category, brand, sort } = filter;
 
     const where: Prisma.ProductWhereInput = {
       deletedAt: { equals: null },
@@ -95,32 +101,36 @@ export class ProductService {
             { sku: { contains: search, mode: 'insensitive' } },
             {
               category: {
-                name: { contains: search },
+                name: { contains: search, mode: 'insensitive' },
                 deletedAt: { equals: null },
               },
             },
             {
               brand: {
-                name: { contains: search },
+                name: { contains: search, mode: 'insensitive' },
                 deletedAt: { equals: null },
               },
             },
           ]
         : undefined,
-      AND: filters?.map(({ field, value }) =>
-        field === 'category'
+      AND: [
+        category
           ? {
               category: {
-                name: { equals: value },
+                name: { equals: category },
                 deletedAt: { equals: null },
               },
             }
-          : field === 'brand'
-            ? {
-                brand: { name: { equals: value }, deletedAt: { equals: null } },
-              }
-            : { [field]: value },
-      ),
+          : undefined,
+        brand
+          ? {
+              brand: {
+                name: { equals: brand },
+                deletedAt: { equals: null },
+              },
+            }
+          : undefined,
+      ].filter(Boolean),
     };
 
     const orderBy = sort?.map(({ field, value }) => ({ [field]: value })) || [];
@@ -131,8 +141,8 @@ export class ProductService {
         title: true,
         sku: true,
         price: true,
-        category: { select: { name: true } },
-        brand: { select: { name: true } },
+        category: { select: { id: true, name: true, slug: true } },
+        brand: { select: { id: true, name: true, slug: true } },
       },
       where,
       orderBy,

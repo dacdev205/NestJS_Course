@@ -11,14 +11,17 @@ import {
 import { ProductService } from 'src/module/product/product.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.schema';
-import { FilterProductDto } from './dtos/filter-product.dto';
+import {
+  FilterProductDto,
+  FilterProductSchema,
+} from './dtos/filter-product.dto';
 import { Product } from '@prisma/client';
 import {
   CreateProductSchema,
   UpdateProductDto,
 } from './dtos/update-product.dto';
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
@@ -33,7 +36,10 @@ export class ProductController {
   }
 
   @Get()
-  findAllProduct(@Query() search?: FilterProductDto): Promise<Product[]> {
+  findAllProduct(
+    @Query(new ZodValidationPipe(FilterProductSchema))
+    search: FilterProductDto,
+  ): Promise<Product[]> {
     return this.productService.findAll(search);
   }
   @Get(':id')
