@@ -9,14 +9,15 @@ model Product {
   specifications      String    @db.Text
   images              String[]
   warranty            String    @default("") @db.Text
-  deliveryInfo String?   @map("delivery_info") @db.VarChar(255)
+  slug                String    @db.VarChar(255)
+  deliveryInfo        String?   @map("delivery_info") @db.VarChar(255)
   deletedAt           DateTime? @map("deleted_at") @db.Timestamp
 
-  categoryId String  @map("category_id") @db.VarChar(36)
-  brandId    String? @map("brand_id") @db.VarChar(36)
+  categoryId          String    @map("category_id") @db.VarChar(36)
+  brandId             String?   @map("brand_id") @db.VarChar(36)
 
-  category Category @relation(fields: [categoryId], references: [id])
-  brand    Brand?   @relation(fields: [brandId], references: [id])
+  category            Category  @relation(fields: [categoryId], references: [id])
+  brand               Brand?    @relation(fields: [brandId], references: [id])
 
   @@map("products")
 }

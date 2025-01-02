@@ -10,10 +10,11 @@ datasource db {
 }
 
 model Brand {
-  id        String    @id @default(uuid()) @db.VarChar(36)
-  name        String  @unique
+  id          String    @id @default(uuid()) @db.VarChar(36)
+  name        String    @unique
+  slug        String    @db.VarChar(255)
 
-  deletedAt   DateTime?  @map("deleted_at")
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamp
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -25,10 +26,11 @@ model Brand {
 model Category {
   id        String    @id @default(uuid()) @db.VarChar(36)
   name      String    @db.VarChar(255)
+  slug      String    @db.VarChar(255)
   
   deletedAt DateTime? @map("deleted_at") @db.Timestamp
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   
   products  Product[]
 
@@ -47,14 +49,29 @@ model Product {
   specifications      String    @db.Text
   images              String[]
   warranty            String    @default("") @db.Text
-  deliveryInfo String?   @map("delivery_info") @db.VarChar(255)
+  slug                String    @db.VarChar(255)
+  deliveryInfo        String?   @map("delivery_info") @db.VarChar(255)
   deletedAt           DateTime? @map("deleted_at") @db.Timestamp
 
-  categoryId String  @map("category_id") @db.VarChar(36)
-  brandId    String? @map("brand_id") @db.VarChar(36)
+  categoryId          String    @map("category_id") @db.VarChar(36)
+  brandId             String?   @map("brand_id") @db.VarChar(36)
 
-  category Category @relation(fields: [categoryId], references: [id])
-  brand    Brand?   @relation(fields: [brandId], references: [id])
+  category            Category  @relation(fields: [categoryId], references: [id])
+  brand               Brand?    @relation(fields: [brandId], references: [id])
 
   @@map("products")
+}
+
+model User {
+  id          String    @id @default(uuid()) @db.VarChar(36)
+  firstName   String    @map("first_name")
+  lastName    String    @map("last_name")
+  phone       String    @unique
+  email       String    @unique
+  password    String 
+  deletedAt   DateTime?  @map("deleted_at") @db.Timestamp
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("user")
 }
