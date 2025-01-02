@@ -1,24 +1,30 @@
+import { create_slug } from 'src/common/utils/create-slug';
 import {
   BRAND_NOTFOUND,
   BRAND_UPDATE_FAILED,
 } from 'src/content/errors/brand.error';
+import { BrandRepository } from 'src/module/brand/brand.repo';
+import { UpdateBrandDto } from 'src/module/brand/dtos/update-brand.dto';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Brand, Prisma } from '@prisma/client';
-
-import { BrandRepository } from 'src/module/brand/brand.repo';
 import { CreateBrandDto } from './dtos/create-brand-schema';
-import { UpdateBrandDto } from 'src/module/brand/dtos/update-brand.dto';
 
 @Injectable()
 export class BrandService {
   constructor(private readonly brandRepository: BrandRepository) {}
+  async genSlug(name: string): Promise<string> {
+    const slug = create_slug(name);
+    return slug;
+  }
   async create(requestBody: CreateBrandDto): Promise<Brand> {
     const payload = { name: requestBody.name };
+    const slug = await this.genSlug(requestBody.name);
     const data = {
+      slug,
       ...payload,
     };
     const brand = await this.brandRepository.create({ data });

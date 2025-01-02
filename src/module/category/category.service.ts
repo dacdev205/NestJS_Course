@@ -1,15 +1,15 @@
+import { create_slug } from 'src/common/utils/create-slug';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Category, Prisma } from '@prisma/client';
 import {
   CATEGORY_CREATE_FAILED,
   CATEGORY_NOTFOUND,
   CATEGORY_UPDATE_FAILED,
 } from './../../content/errors/category.error';
-import { Category, Prisma } from '@prisma/client';
-
 import { CategoryRepository } from './category.repo';
 import { CreateCategoryDto } from './dtos/create-category-schema';
 import { UpdateCategoryDto } from './dtos/update-category-schema';
@@ -17,9 +17,16 @@ import { UpdateCategoryDto } from './dtos/update-category-schema';
 @Injectable()
 export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
+  async genSlug(name: string): Promise<string> {
+    const slug = create_slug(name);
+    return slug;
+  }
   async create(requestBody: CreateCategoryDto): Promise<Category> {
     const payload = { name: requestBody.name };
+    const slug = await this.genSlug(requestBody.name);
+
     const data = {
+      slug,
       ...payload,
     };
     const category = await this.categoryRepository.create({ data });
