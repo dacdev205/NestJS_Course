@@ -12,3 +12,8 @@ export const PHONE_ALREADY_EXIST = {
   code: 'phone_already_exist',
   message: 'Phone already exist',
 };
+
+export const AUTH_FAILED_LOGIN = {
+  code: 'account_is_not_active',
+  message: 'Account is not active',
+};

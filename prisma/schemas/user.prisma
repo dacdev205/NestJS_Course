@@ -4,7 +4,11 @@ model User {
   lastName    String    @map("last_name")
   phone       String    @unique
   email       String    @unique
-  password    String 
+  password    String
+  isActive    Boolean   @default(false)
+  isAdmin     Boolean   @default(false)
+  codeId      String?   @map("code_id") @db.VarChar(255) 
+  codeExpiredAt DateTime? @map("code_exprired_at") @db.Timestamp
   deletedAt   DateTime?  @map("deleted_at") @db.Timestamp
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

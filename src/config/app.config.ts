@@ -1,4 +1,3 @@
-// Cấu hình ứng dụng
 export default () => ({
   app: {
     name: process.env.APP_NAME || 'NestJS Application',

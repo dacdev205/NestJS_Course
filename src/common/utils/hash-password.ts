@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
-export function hashPassword(raw_password: string) {
-  const salt = bcrypt.genSaltSync();
-  return bcrypt.hashSync(raw_password, salt);
+
+export async function hashPassword(raw_password: string): Promise<string> {
+  const saltRounds = bcrypt.genSaltSync();
+  return await bcrypt.hash(raw_password, saltRounds);
 }
