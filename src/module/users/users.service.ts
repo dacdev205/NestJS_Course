@@ -49,18 +49,20 @@ export class UsersService {
     } else if (existing_phone) {
       throw new ConflictException(PHONE_ALREADY_EXIST);
     }
-
     return await this.userRepository.create({ data });
   }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
+  async findOneByEmail(email: string): Promise<User> {
     return this.userRepository.findOne({ where: { email } });
   }
-  async findOneByPhone(phone: string): Promise<User | undefined> {
+  async findOneByPhone(phone: string): Promise<User> {
     return this.userRepository.findOne({ where: { phone } });
   }
   async findById(id: string): Promise<User | null> {
     return this.userRepository.findById({ where: { id } });
+  }
+  async findAll(): Promise<User[]> {
+    return this.userRepository.findAll();
   }
   async validateUser(email: string, password: string): Promise<UserProfile> {
     const user = await this.findOneByEmail(email);
@@ -84,7 +86,7 @@ export class UsersService {
     }
     return user;
   }
-  async updateUser(id: string, updateData: Partial<User>): Promise<User> {
+  async updateUser(id: string, updateData: Partial<User>): Promise<any> {
     const user = await this.userRepository.findById({ where: { id } });
     if (!user) {
       throw new BadRequestException(USER_NOT_FOUND);
@@ -93,6 +95,6 @@ export class UsersService {
       where: { id },
       data: updateData,
     });
-    return user;
+    return updateData;
   }
 }

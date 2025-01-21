@@ -30,10 +30,10 @@ export class CategoryController {
     return category;
   }
 
-  // @Get()
-  // findAllCategory(): Promise<Category[]> {
-  //   return this.categoryService.findAll();
-  // }
+  @Get()
+  findAllCategory(): Promise<Category[]> {
+    return this.categoryService.findAll();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Category> {

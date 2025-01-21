@@ -1,7 +1,6 @@
-import { Brand, Prisma } from '@prisma/client';
-
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
+import { Brand, Prisma } from '@prisma/client';
 
 @Injectable()
 export class BrandRepository {
@@ -12,7 +11,6 @@ export class BrandRepository {
   async findAll(args?: Prisma.BrandFindManyArgs): Promise<Brand[]> {
     return this.prisma.brand.findMany(args);
   }
-
   async findById(arg: Prisma.BrandFindUniqueArgs): Promise<Brand | null> {
     return this.prisma.brand.findUnique(arg);
   }

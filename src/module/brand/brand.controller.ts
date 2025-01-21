@@ -16,7 +16,6 @@ import { CreateBrandDto, CreateBrandSchema } from './dtos/create-brand-schema';
 @Controller('brand')
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
-
   @Post()
   @UsePipes(new ZodValidationPipe(CreateBrandSchema))
   createBrand(@Body() createBrandDto: CreateBrandDto): Promise<Brand> {

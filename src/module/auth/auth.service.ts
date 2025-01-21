@@ -2,8 +2,14 @@ import dayjs from 'dayjs';
 import { jwtConstants } from 'src/common/constants/jwtConstants';
 import { AuthResponse } from 'src/common/types/auth-response';
 import { UserProfile } from 'src/common/types/user-profile-response';
+import { compare_password } from 'src/common/utils/compare-password';
 import { hashPassword } from 'src/common/utils/hash-password';
-import { CODE_HAS_EXPIRED, CODE_IS_VALID } from 'src/content/errors/code.error';
+import {
+  ACCOUNT_IS_ACTIVED,
+  CODE_HAS_EXPIRED,
+  CODE_IS_VALID,
+} from 'src/content/errors/code.error';
+import { WRONG_PASSWORD } from 'src/content/errors/password.error';
 import { UsersService } from 'src/module/users/users.service';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -19,6 +25,7 @@ import {
   USER_NOT_FOUND,
 } from './../../content/errors/user.error';
 import { SignUpDto } from './../users/dtos/signup-user-schema';
+import { ChangePasswordDto } from './dtos/change-password';
 import { VerifyAccountDto } from './dtos/verify-schema';
 
 @Injectable()
@@ -47,7 +54,11 @@ export class AuthService {
       throw new ConflictException(PHONE_ALREADY_EXIST);
     }
     const user = await this.usersService.create(data);
-    const payload = { sub: user.id, username: user.lastName };
+    const payload = {
+      sub: user.id,
+      username: user.lastName,
+      roles: user.roles,
+    };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
@@ -57,7 +68,12 @@ export class AuthService {
     };
   }
   async signIn(user: UserProfile): Promise<AuthResponse> {
-    const payload = { sub: user.id, username: user.lastName };
+    const payload = {
+      sub: user.id,
+      username: user.lastName,
+      roles: user.roles,
+    };
+
     return {
       access_token: await this.jwtService.signAsync(payload),
       refresh_token: await this.jwtService.signAsync(payload, {
@@ -65,10 +81,15 @@ export class AuthService {
       }),
     };
   }
+
   async verifyAccount(verifyAccountDto: VerifyAccountDto): Promise<any> {
-    const user = await this.usersService.findById(verifyAccountDto.id);
+    const user = await this.usersService.findOneByEmail(verifyAccountDto.email);
+
     if (!user) {
       throw new NotFoundException(USER_NOT_FOUND);
+    }
+    if (user.isActive) {
+      throw new BadRequestException(ACCOUNT_IS_ACTIVED);
     }
     if (verifyAccountDto.code_id !== user.codeId) {
       throw new BadRequestException(CODE_IS_VALID);
@@ -78,7 +99,7 @@ export class AuthService {
     if (!isBeforeCheck) {
       throw new BadRequestException(CODE_HAS_EXPIRED);
     }
-    return await this.usersService.updateUser(verifyAccountDto.id, {
+    return await this.usersService.updateUser(user.id, {
       isActive: true,
     });
   }
@@ -87,10 +108,37 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException(USER_NOT_FOUND);
     }
+    if (user.isActive) {
+      throw new BadRequestException(ACCOUNT_IS_ACTIVED);
+    }
     const data = {
       codeId: uuidv4(),
       codeExpiredAt: dayjs().add(1, 'days').toDate(),
     };
     return await this.usersService.updateUser(user.id, data);
   }
+  async changePassword(changePasswordDto: ChangePasswordDto): Promise<any> {
+    const user = await this.usersService.findOneByEmail(
+      changePasswordDto.email,
+    );
+    if (!user) {
+      throw new NotFoundException(USER_NOT_FOUND);
+    }
+    const isMatching = await compare_password(
+      changePasswordDto.old_password,
+      user.password,
+    );
+    if (!isMatching) {
+      throw new BadRequestException(WRONG_PASSWORD);
+    }
+    const new_password = await hashPassword(changePasswordDto.new_password);
+    const data = {
+      password: new_password,
+    };
+    return await this.usersService.updateUser(user.id, data);
+  }
+  //TODO
+  // reset password
+  // forgot password
+  //sendmail
 }

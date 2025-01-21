@@ -17,6 +17,7 @@ export class UserRepository {
   async findById(arg: Prisma.UserFindUniqueArgs): Promise<User | null> {
     return this.prisma.user.findUnique(arg);
   }
+
   async delete(arg: Prisma.UserDeleteArgs): Promise<User> {
     return this.prisma.user.delete(arg);
   }
