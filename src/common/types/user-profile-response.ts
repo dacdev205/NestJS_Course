@@ -4,4 +4,5 @@ export class UserProfile {
   lastName: string;
   phone: string;
   email: string;
+  roles: string;
 }
