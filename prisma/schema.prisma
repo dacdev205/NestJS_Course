@@ -70,7 +70,7 @@ model User {
   email       String    @unique
   password    String
   isActive    Boolean   @default(false)
-  isAdmin     Boolean   @default(false)
+  roles        ROLES     @default(USER)  
   codeId      String?   @map("code_id") @db.VarChar(255) 
   codeExpiredAt DateTime? @map("code_exprired_at") @db.Timestamp
   deletedAt   DateTime?  @map("deleted_at") @db.Timestamp
@@ -78,4 +78,9 @@ model User {
   updatedAt   DateTime  @updatedAt
 
   @@map("user")
+}
+
+enum ROLES {
+  ADMIN
+  USER
 }
