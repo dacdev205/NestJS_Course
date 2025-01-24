@@ -9,6 +9,7 @@ import { VerifyAccountDto } from './dtos/verify-schema';
 import { ChangePasswordDto } from './dtos/change-password';
 import { User } from '@prisma/client';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ResetPassDto } from './dtos/reset-password';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +29,7 @@ export class AuthController {
   ): Promise<any> {
     return await this.authService.verifyAccount(verifyAccountDto);
   }
+
   @Post('retry-active')
   async retryActiveAccount(@Body('email') email: string): Promise<any> {
     return await this.authService.retryActive(email);
@@ -38,5 +40,13 @@ export class AuthController {
     @Body() changePasswordDto: ChangePasswordDto,
   ): Promise<User> {
     return await this.authService.changePassword(changePasswordDto);
+  }
+  @Post('retry-password')
+  async retryResetPassword(@Body('email') email: string): Promise<any> {
+    return await this.authService.retryResetPassword(email);
+  }
+  @Put('reset-password')
+  async resetPassword(@Body() ressetPassDto: ResetPassDto): Promise<User> {
+    return await this.authService.resetPassword(ressetPassDto);
   }
 }

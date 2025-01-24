@@ -1,4 +1,4 @@
-import { GlobalModule } from 'src/shared/global.module';
+import { PrismaModule } from 'src/shared/prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { BrandModule } from '../brand/brand.module';
 import { CategoryModule } from '../category/category.module';
@@ -7,7 +7,7 @@ import { ProductRepository } from './product.repo';
 import { ProductService } from './product.service';
 
 @Module({
-  imports: [GlobalModule, BrandModule, CategoryModule],
+  imports: [PrismaModule, BrandModule, CategoryModule],
   controllers: [ProductController],
   providers: [ProductService, ProductRepository],
 })
